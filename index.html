@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chosen 💙</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #034078;
+    background: linear-gradient(135deg, #7ec8e3, #cfe9f7);
+    transition: background 3s ease;
+}
+
+.container {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.35);
+    padding: 40px 30px;
+    border-radius: 22px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    max-width: 360px;
+    width: 90%;
+    position: relative;
+}
+
+h1 {
+    font-size: 26px;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+button {
+    border: none;
+    padding: 14px 32px;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    position: absolute;
+    white-space: nowrap;
+}
+
+#yesBtn {
+    background: #4fa3d1;
+    color: #fff;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#noBtn {
+    background: #fff;
+    color: #4fa3d1;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.buttons {
+    position: relative;
+    height: 160px;
+}
+
+.hidden {
+    display: none;
+}
+
+.show {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.slider {
+    width: 100%;
+    margin: 15px 0;
+}
+
+.heart {
+    position: fixed;
+    font-size: 24px;
+    animation: float 3s linear forwards;
+    pointer-events: none;
+}
+
+@keyframes float {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-100vh) scale(1.6); opacity: 0; }
+}
+
+/* Slow background glow animation */
+body.glow {
+    animation: glowBG 6s infinite alternate;
+}
+
+@keyframes glowBG {
+    0% { background: linear-gradient(135deg, #7ec8e3, #cfe9f7); }
+    50% { background: linear-gradient(135deg, #b0d4f1, #d0efff); }
+    100% { background: linear-gradient(135deg, #7ec8e3, #cfe9f7); }
+}
+
+/* Ending screen styling */
+#ending {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 2s ease;
+}
+
+#ending.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgMusic" loop>
+    <source src="love.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container" id="main">
+    <h1>Chosen 💙</h1>
+    <p id="message">
+        From the moment you smiled,<br>
+        something felt right… 💫
+    </p>
+
+    <input type="range" min="0" max="1" step="0.01" value="0.5"
+           class="slider" id="volume">
+
+    <div class="buttons">
+        <button id="yesBtn">Yes 💘</button>
+        <button id="noBtn">No 🙃</button>
+    </div>
+</div>
+
+<div class="container hidden" id="success">
+    <h1>Yaaay 💕</h1>
+    <p>You just made my heart very happy, Chosen 💙</p>
+</div>
+
+<div id="ending">
+    <div>
+        💖 This was meant to be 💖<br>
+        Hope u liked it, forever 💌
+    </div>
+</div>
+
+<script>
+const bgMusic = document.getElementById("bgMusic");
+const volume = document.getElementById("volume");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const main = document.getElementById("main");
+const success = document.getElementById("success");
+const ending = document.getElementById("ending");
+const message = document.getElementById("message");
+
+// Volume slider
+let targetVolume = volume.value;
+volume.oninput = () => targetVolume = volume.value;
+
+// Reveal question after 3 seconds
+setTimeout(() => {
+    message.innerHTML = `
+        Chosen, would you make me<br>
+        the happiest person and be<br>
+        my Valentine? 💌
+    `;
+    yesBtn.classList.add("show");
+}, 3000);
+
+// Orbiting No button
+let angle = 0;
+let radius = 110;
+let orbiting = false;
+
+const playfulTexts = [
+    "No 🙃", "Hey 😅", "Careful 😏", "You’re smiling 😄",
+    "Still no? 💙", "Just say yes 🥰"
+];
+
+let count = 0;
+
+function orbit() {
+    angle += 0.04;
+    const rect = main.getBoundingClientRect();
+    const centerX = rect.left + rect.width/2;
+    const centerY = rect.top + rect.height/2;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+    noBtn.style.position = "fixed";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+    requestAnimationFrame(orbit);
+}
+
+function startOrbit() {
+    if (!orbiting) {
+        orbiting = true;
+        orbit();
+    }
+}
+
+noBtn.addEventListener("mouseover", startOrbit);
+noBtn.addEventListener("click", () => {
+    count++;
+    noBtn.innerText = playfulTexts[Math.min(count, playfulTexts.length -1)];
+});
+
+// YES button logic
+yesBtn.onclick = () => {
+    startMusicWithFade();
+    document.body.classList.add("glow"); // start background glow
+    main.classList.add("hidden");
+    success.classList.remove("hidden");
+    setInterval(createHeart, 180);
+
+    // Show ending screen after 6 seconds
+    setTimeout(() => {
+        ending.classList.add("show");
+    }, 6000);
+};
+
+function startMusicWithFade() {
+    bgMusic.volume = 0;
+    bgMusic.play();
+    let fade = setInterval(() => {
+        if (bgMusic.volume < targetVolume) {
+            bgMusic.volume += 0.01;
+        } else {
+            clearInterval(fade);
+        }
+    }, 120);
+}
+
+// Floating hearts
+function createHeart() {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = Math.random() > 0.5 ? "💙" : "💖";
+    h.style.left = Math.random() * window.innerWidth + "px";
+    h.style.bottom = "0px";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 3000);
+}
+</script>
+
+</body>
+</html>
